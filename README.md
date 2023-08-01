@@ -2,7 +2,7 @@
 
 Application Development Finals
 
-Coded by: Felise Jann Sanchez, Xavier Lim, Jedd Fernando, memberC. 
+Coded by: Felise Jann Sanchez, Xavier Lim, Jedd Fernando, Rainier Rivera. 
 # Instructions
 
 

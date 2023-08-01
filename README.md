@@ -15,7 +15,7 @@ If you are using a virtual environment created with venv (Python 3.3+) or virtua
 
 **Windows:**
 ```
-<your_virtual_env_name>\Scripts\activate.bat```
+<your_virtual_env_name>\Scripts\activate.bat
 ```
 
 **Linux/macOS:**

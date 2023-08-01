@@ -9,14 +9,33 @@ def format_time(seconds):
     h, m = divmod(m, 60)
     return f"{h:02d}:{m:02d}:{s:02d}"
 
+stop_alarm_flag = False
+alarm_in_progress = False
+
 def set_alarm():
+    global stop_alarm_flag, alarm_in_progress
     alarm_hour = int(hour_entry.get())
     alarm_minute = int(minute_entry.get())
-    alarm_time = dt.datetime(dt.datetime.now().year, dt.datetime.now().month, dt.datetime.now().day, alarm_hour, alarm_minute)
+    
+    if alarm_in_progress:
+        # An alarm is already in progress, don't start a new one
+        messagebox.showwarning("Warning", "An alarm is already in progress. Please stop the current alarm first.")
+        return   
+    alarm_in_progress = True
+
+    # Current date and time
+    current_time = dt.datetime.now()
+
+    # Set alarm_time to the current day initially
+    alarm_time = dt.datetime(current_time.year, current_time.month, current_time.day, alarm_hour, alarm_minute)
+
+    # If the alarm time has already passed, add a day to set it for tomorrow
+    if alarm_time <= current_time:
+        alarm_time += dt.timedelta(days=1)
 
     stop_button.config(state=tk.NORMAL)  # Enable the "Stop" button when the alarm is set
 
-    while True:
+    while not stop_alarm_flag:
         current_time = dt.datetime.now()
         if current_time >= alarm_time:
             break
@@ -25,19 +44,24 @@ def set_alarm():
         app.update()  # Update the app window to refresh the countdown label
         time.sleep(1)
 
+    stop_alarm_flag = False  # Reset the stop_alarm_flag
+
     countdown_label.config(text="00:00:00")
     app.update()  # Update the app window to refresh the countdown label
 
     stop_button.config(state=tk.DISABLED)  # Disable the "Stop" button after the alarm is triggered
 
-    alarm_message = text_entry.get()
-    alarms_listbox.insert(tk.END, f"{alarm_time.strftime('%H:%M')} - {alarm_message}")
-    speak_alarm(alarm_message)
-    messagebox.showinfo("Alarm", "Alarm Done!")
+    if not stop_alarm_flag:
+        alarm_message = text_entry.get()
+        alarms_listbox.insert(tk.END, f"{alarm_time.strftime('%H:%M')} - {alarm_message}")
+        speak_alarm(alarm_message)
+        messagebox.showinfo("Alarm", "Alarm Done!")
 
 def stop_alarm():
-    global stop_alarm_flag
+    global stop_alarm_flag, alarm_in_progress
     stop_alarm_flag = True
+    alarm_in_progress = False
+    alarms_listbox.delete(0, tk.END)  # Clear all alarms in the listbox
 
 def speak_alarm(message):
     engine = pyttsx3.init()
